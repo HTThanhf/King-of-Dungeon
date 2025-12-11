@@ -3,7 +3,7 @@ name: Deploy to Firebase Hosting
 on:
   push:
     branches:
-      - main  # deploy khi push branch main
+      - main  # deploy khi push main
 
 jobs:
   deploy:
@@ -31,31 +31,25 @@ jobs:
       # 5️⃣ Setup Firebase Service Account from GitHub Secret
       - name: Setup Firebase Service Account
         run: |
-          # Ghi JSON nguyên vẹn từ secret, fix lỗi trống/hỏng
+          # Ghi JSON từ secret
           printf '%s' "${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}" > service-account.json
           export GOOGLE_APPLICATION_CREDENTIALS=service-account.json
-          ls -l service-account.json
-          cat service-account.json
 
-      # 6️⃣ Debug: check secret tồn tại
-      - name: Debug secret
-        run: |
-          if [ -z "${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}" ]; then
-            echo "FIREBASE_SERVICE_ACCOUNT_KEY is empty!"
-            exit 1
-          else
-            echo "Secret loaded"
-          fi
+          # Debug JSON
+          echo "JSON file size:"
+          ls -lh service-account.json
+          echo "First 5 lines:"
+          head -n 5 service-account.json
 
-      # 7️⃣ Authenticate Firebase CLI
+      # 6️⃣ Authenticate Firebase CLI
       - name: Authenticate with gcloud
         run: gcloud auth activate-service-account ${{ secrets.FIREBASE_CLIENT_EMAIL }} --key-file=service-account.json
 
-      # 8️⃣ Select Firebase Project
+      # 7️⃣ Select Firebase Project
       - name: Select Firebase Project
         run: firebase use king-of-dungeon
 
-      # 9️⃣ Cache node_modules
+      # 8️⃣ Cache node_modules
       - name: Cache node_modules
         uses: actions/cache@v3
         with:
@@ -64,6 +58,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # 🔟 Deploy to Firebase Hosting
+      # 9️⃣ Deploy to Firebase Hosting
       - name: Deploy
         run: firebase deploy --only hosting

@@ -46,4 +46,7 @@ jobs:
 
       # 7️⃣ Deploy trực tiếp, không dùng `firebase use`
       - name: Deploy to Firebase Hosting
-        run: firebase deploy --only hosting --project king-of-dungeon
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}
+      run: firebase deploy --only hosting --project king-of-dungeon
+

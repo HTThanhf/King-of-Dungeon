@@ -3,7 +3,7 @@ name: Deploy to Firebase Hosting
 on:
   push:
     branches:
-      - main  # deploy khi push branch main
+      - main  # deploy khi push main
 
 jobs:
   deploy:
@@ -31,10 +31,11 @@ jobs:
       # 5️⃣ Setup Firebase Service Account file from GitHub Secret
       - name: Setup Firebase Service Account
         run: |
+          # Ghi JSON nguyên vẹn, fix lỗi format
           printf '%s' "${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}" > service-account.json
           export GOOGLE_APPLICATION_CREDENTIALS=service-account.json
 
-      # 6️⃣ Check JSON format (debug)
+      # 6️⃣ Debug: check JSON format
       - name: Check JSON format
         run: cat service-account.json
 
@@ -46,7 +47,7 @@ jobs:
       - name: Select Firebase Project
         run: firebase use king-of-dungeon
 
-      # 9️⃣ Optional: cache node_modules to speed up CI
+      # 9️⃣ Cache node_modules to speed up CI
       - name: Cache node_modules
         uses: actions/cache@v3
         with:

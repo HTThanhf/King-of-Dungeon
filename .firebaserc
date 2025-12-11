@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "king-of-dungeon"
+  },
+  "targets": {
+    "king-of-dungeon": {
+      "hosting": {
+        "king-of-dungeon": [
+          "king-of-dungeon"
+        ]
+      }
+    }
   }
 }

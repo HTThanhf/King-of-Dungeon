@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "king-of-dungeon",
     "public": ".",
     "ignore": [
       "firebase.json",

@@ -41,5 +41,7 @@ jobs:
         run: firebase use king-of-dungeon
 
       # 7️⃣ Deploy hosting
+      # 6️⃣ Chọn project trực tiếp khi deploy
       - name: Deploy to Firebase Hosting
-        run: firebase deploy --only hosting
+        run: firebase deploy --only hosting --project king-of-dungeon
+

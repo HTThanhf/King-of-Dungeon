@@ -31,11 +31,11 @@ jobs:
       # 5️⃣ Setup Firebase Service Account from GitHub Secret
       - name: Setup Firebase Service Account
         run: |
-          # Ghi JSON từ secret
+          # Ghi JSON nguyên vẹn từ secret
           printf '%s' "${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}" > service-account.json
           export GOOGLE_APPLICATION_CREDENTIALS=service-account.json
 
-          # Debug JSON
+          # Debug JSON file
           echo "JSON file size:"
           ls -lh service-account.json
           echo "First 5 lines:"

@@ -24,4 +24,6 @@ jobs:
         run: echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}" > service-account.json
 
       - name: Deploy to Firebase Hosting
-        run: firebase deploy --only hosting --project king-of-dungeon --token "$(cat service-account.json)"
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: service-account.json
+        run: firebase deploy --only hosting --project king-of-dungeon

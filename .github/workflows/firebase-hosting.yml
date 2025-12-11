@@ -3,7 +3,7 @@ name: Deploy to Firebase Hosting
 on:
   push:
     branches:
-      - main  # Khi push main thì deploy
+      - main  # tự deploy khi push main
 
 jobs:
   deploy:
@@ -24,17 +24,20 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
-      # 4️⃣ Cache node_modules để build nhanh hơn (nếu cần)
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+      # 4️⃣ Install gcloud CLI (dùng service account)
+      - name: Install gcloud CLI
+        run: sudo apt-get update && sudo apt-get install -y google-cloud-cli
 
-      # 5️⃣ Deploy lên Firebase Hosting
+      # 5️⃣ Decode service account và ghi file JSON
+      - name: Setup Firebase Service Account
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}" | base64 --decode > service-account.json
+          export GOOGLE_APPLICATION_CREDENTIALS=service-account.json
+
+      # 6️⃣ Authenticate Firebase CLI bằng service account
+      - name: Authenticate with gcloud
+        run: gcloud auth activate-service-account --key-file=service-account.json
+
+      # 7️⃣ Deploy Firebase Hosting
       - name: Deploy to Firebase Hosting
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}
-        run: firebase deploy --only hosting --project king-of-dungeon
+        run: firebase deploy --only hosting --project ${{ secrets.FIREBASE_PROJECT_ID }}

@@ -3,11 +3,12 @@ name: Deploy to Firebase Hosting
 on:
   push:
     branches:
-      - main
+      - main  # deploy khi push main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       # 1️⃣ Checkout code
       - name: Checkout repository
@@ -23,26 +24,26 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
-      # 4️⃣ Decode secret base64 thành JSON
+      # 4️⃣ Install gcloud CLI (nếu cần Firebase Admin commands)
+      - name: Install gcloud CLI
+        run: sudo apt-get update && sudo apt-get install -y google-cloud-cli
+
+      # 5️⃣ Setup Firebase Service Account từ GitHub Secret (base64)
       - name: Setup Firebase Service Account
         run: |
           echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}" | base64 --decode > service-account.json
           export GOOGLE_APPLICATION_CREDENTIALS=service-account.json
+
+          # Debug JSON (tuỳ chọn)
           echo "JSON file size:"
           ls -lh service-account.json
+          echo "First 5 lines:"
           head -n 5 service-account.json
 
-      # 5️⃣ Authenticate với gcloud
+      # 6️⃣ Authenticate với gcloud (tuỳ chọn nếu cần)
       - name: Authenticate with gcloud
         run: gcloud auth activate-service-account ${{ secrets.FIREBASE_CLIENT_EMAIL }} --key-file=service-account.json
 
-      # 6️⃣ Chọn project Firebase
-      - name: Select Firebase Project
-        run: firebase use king-of-dungeon
-
-      # 7️⃣ Deploy hosting
-      # 6️⃣ Chọn project trực tiếp khi deploy
+      # 7️⃣ Deploy trực tiếp, không dùng `firebase use`
       - name: Deploy to Firebase Hosting
         run: firebase deploy --only hosting --project king-of-dungeon
-
-
